@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тренажёр хираганы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 32px;
+            color: #7b1fa2;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #666;
+        }
+        
+        .score {
+            text-align: right;
+            font-size: 18px;
+            color: #7b1fa2;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .menu-grid {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .menu-btn {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: none;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s;
+        }
+        
+        .menu-btn:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .menu-btn h3 {
+            color: #7b1fa2;
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+        
+        .menu-btn p {
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .menu-btn .example {
+            font-size: 24px;
+            margin-top: 10px;
+            font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+        }
+        
+        .exercise-card {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        .question-display {
+            text-align: center;
+            font-size: 80px;
+            margin: 30px 0;
+            font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option-btn {
+            padding: 25px;
+            font-size: 28px;
+            border: 2px solid #ce93d8;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+        }
+        
+        .option-btn:hover:not(:disabled) {
+            border-color: #9c27b0;
+            background: #f3e5f5;
+        }
+        
+        .option-btn.correct {
+            border-color: #4caf50;
+            background: #c8e6c9;
+        }
+        
+        .option-btn.incorrect {
+            border-color: #f44336;
+            background: #ffcdd2;
+        }
+        
+        .option-btn.neutral {
+            border-color: #e0e0e0;
+            background: #f5f5f5;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 15px;
+            font-size: 24px;
+            border: 2px solid #ce93d8;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            background: #9c27b0;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #7b1fa2;
+        }
+        
+        .btn-secondary {
+            color: #7b1fa2;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 10px;
+        }
+        
+        .result-message {
+            text-align: center;
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        
+        .result-correct {
+            color: #4caf50;
+        }
+        
+        .result-incorrect {
+            color: #f44336;
+        }
+        
+        .result-info {
+            color: #ff9800;
+        }
+        
+        .word-meaning {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+        
+        .symbols-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .symbol-btn {
+            padding: 20px;
+            font-size: 32px;
+            border: 2px solid #ddd;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: "Noto Sans JP", "Hiragino Sans", "Yu Gothic", sans-serif;
+        }
+        
+        .symbol-btn:hover:not(:disabled) {
+            background: #f5f5f5;
+        }
+        
+        .symbol-btn.selected {
+            background: #2196f3;
+            color: white;
+            border-color: #2196f3;
+        }
+        
+        .symbol-btn.result-correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+        
+        .symbol-btn.result-incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+        
+        .symbol-btn.result-missed {
+            background: #ffc107;
+            color: black;
+            border-color: #ffc107;
+        }
+        
+        .symbol-btn.result-neutral {
+            background: #e0e0e0;
+            border-color: #e0e0e0;
+        }
+        
+        .legend {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .legend-item {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 3px;
+            margin: 0 5px 0 15px;
+            vertical-align: middle;
+        }
+        
+        .task-text {
+            text-align: center;
+            font-size: 24px;
+            color: #7b1fa2;
+            margin-bottom: 25px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 28px;
+            }
+            
+            .question-display {
+                font-size: 60px;
+            }
+            
+            .option-btn {
+                padding: 20px;
+                font-size: 24px;
+            }
+            
+            .symbols-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 8px;
+            }
+            
+            .symbol-btn {
+                padding: 15px;
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Тренажёр хираганы</h1>
+            <p class="subtitle">Выбери тип упражнения</p>
+        </div>
+        
+        <!-- Menu Screen -->
+        <div id="menu-screen">
+            <div class="menu-grid">
+                <button class="menu-btn" onclick="startExercise(1)">
+                    <h3>Хирагана → Ромадзи</h3>
+                    <p>Увидишь символ, выберешь его чтение</p>
+                    <div class="example">あ → ?</div>
+                </button>
+                
+                <button class="menu-btn" onclick="startExercise(2)">
+                    <h3>Ромадзи → Хирагана</h3>
+                    <p>Увидишь чтение, выберешь символ</p>
+                    <div class="example">ka → ?</div>
+                </button>
+                
+                <button class="menu-btn" onclick="startExercise(3)">
+                    <h3>Чтение слов</h3>
+                    <p>Увидишь слово, напишешь как читается</p>
+                    <div class="example">あき → ?</div>
+                </button>
+                
+                <button class="menu-btn" onclick="startExercise(4)">
+                    <h3>Найди символы</h3>
+                    <p>Найдёшь символы по заданию</p>
+                    <div class="example">Найди все со звуком "a"</div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Exercise Screen -->
+        <div id="exercise-screen" class="hidden">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <button class="btn-secondary" onclick="backToMenu()">← Назад к меню</button>
+                <div class="score" id="score">Правильно: 0 / 0</div>
+            </div>
+            
+            <div class="exercise-card" id="exercise-content">
+                <!-- Content will be inserted here -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const hiragana = {
+            vowels: [
+                { char: 'あ', romaji: 'a' },
+                { char: 'い', romaji: 'i' },
+                { char: 'う', romaji: 'u' },
+                { char: 'え', romaji: 'e' },
+                { char: 'お', romaji: 'o' }
+            ],
+            k: [
+                { char: 'か', romaji: 'ka' },
+                { char: 'き', romaji: 'ki' },
+                { char: 'く', romaji: 'ku' },
+                { char: 'け', romaji: 'ke' },
+                { char: 'こ', romaji: 'ko' }
+            ],
+            s: [
+                { char: 'さ', romaji: 'sa' },
+                { char: 'し', romaji: 'shi' },
+                { char: 'す', romaji: 'su' },
+                { char: 'せ', romaji: 'se' },
+                { char: 'そ', romaji: 'so' }
+            ],
+            t: [
+                { char: 'た', romaji: 'ta' },
+                { char: 'ち', romaji: 'chi' },
+                { char: 'つ', romaji: 'tsu' },
+                { char: 'て', romaji: 'te' },
+                { char: 'と', romaji: 'to' }
+            ]
+        };
+        
+        const allChars = [...hiragana.vowels, ...hiragana.k, ...hiragana.s, ...hiragana.t];
+        
+        const words = [
+            { hiragana: 'あき', romaji: 'aki', meaning: 'осень' },
+            { hiragana: 'いけ', romaji: 'ike', meaning: 'пруд' },
+            { hiragana: 'かさ', romaji: 'kasa', meaning: 'зонт' },
+            { hiragana: 'すし', romaji: 'sushi', meaning: 'суши' },
+            { hiragana: 'そこ', romaji: 'soko', meaning: 'там' },
+            { hiragana: 'たこ', romaji: 'tako', meaning: 'осьминог' },
+            { hiragana: 'かき', romaji: 'kaki', meaning: 'хурма' },
+            { hiragana: 'ちか', romaji: 'chika', meaning: 'подземка' },
+            { hiragana: 'つき', romaji: 'tsuki', meaning: 'луна' },
+            { hiragana: 'うた', romaji: 'uta', meaning: 'песня' },
+            { hiragana: 'いす', romaji: 'isu', meaning: 'стул' },
+            { hiragana: 'した', romaji: 'shita', meaning: 'под' }
+        ];
+        
+        let currentExercise = 0;
+        let score = { correct: 0, total: 0 };
+        let currentQuestion = null;
+        let showResult = false;
+        let selectedSymbols = [];
+        
+        function shuffle(array) {
+            const newArray = [...array];
+            for (let i = newArray.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+            }
+            return newArray;
+        }
+        
+        function startExercise(type) {
+            currentExercise = type;
+            score = { correct: 0, total: 0 };
+            showResult = false;
+            selectedSymbols = [];
+            updateScore();
+            
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('exercise-screen').classList.remove('hidden');
+            
+            generateQuestion();
+        }
+        
+        function backToMenu() {
+            document.getElementById('menu-screen').classList.remove('hidden');
+            document.getElementById('exercise-screen').classList.add('hidden');
+        }
+        
+        function updateScore() {
+            document.getElementById('score').textContent = `Правильно: ${score.correct} / ${score.total}`;
+        }
+        
+        function generateQuestion() {
+            showResult = false;
+            selectedSymbols = [];
+            
+            if (currentExercise === 1) {
+                generateQuestion1();
+            } else if (currentExercise === 2) {
+                generateQuestion2();
+            } else if (currentExercise === 3) {
+                generateQuestion3();
+            } else if (currentExercise === 4) {
+                generateQuestion4();
+            }
+        }
+        
+        function generateQuestion1() {
+            const correct = allChars[Math.floor(Math.random() * allChars.length)];
+            const others = allChars.filter(c => c.romaji !== correct.romaji);
+            const shuffledOthers = shuffle(others).slice(0, 3);
+            const options = shuffle([correct, ...shuffledOthers]);
+            
+            currentQuestion = {
+                type: 1,
+                question: correct.char,
+                correct: correct.romaji,
+                options: options.map(o => o.romaji)
+            };
+            
+            renderQuestion1();
+        }
+        
+        function generateQuestion2() {
+            const correct = allChars[Math.floor(Math.random() * allChars.length)];
+            const others = allChars.filter(c => c.char !== correct.char);
+            const shuffledOthers = shuffle(others).slice(0, 3);
+            const options = shuffle([correct, ...shuffledOthers]);
+            
+            currentQuestion = {
+                type: 2,
+                question: correct.romaji,
+                correct: correct.char,
+                options: options.map(o => o.char)
+            };
+            
+            renderQuestion2();
+        }
+        
+        function generateQuestion3() {
+            const word = words[Math.floor(Math.random() * words.length)];
+            currentQuestion = {
+                type: 3,
+                word: word
+            };
+            
+            renderQuestion3();
+        }
+        
+        function generateQuestion4() {
+            const taskTypes = [
+                { 
+                    type: 'sound', 
+                    sounds: ['a', 'i', 'u', 'e', 'o'],
+                    getCorrect: (sound) => allChars.filter(c => c.romaji.includes(sound)),
+                    getText: (param) => `Найди все символы со звуком "${param}"`
+                },
+                { 
+                    type: 'row', 
+                    rows: ['k', 's', 't'],
+                    getCorrect: (row) => allChars.filter(c => c.romaji.startsWith(row) && c.romaji !== row),
+                    getText: (param) => `Найди все символы из ряда "${param}"`
+                }
+            ];
+
+            const taskType = taskTypes[Math.floor(Math.random() * taskTypes.length)];
+            let param, correctChars;
+            
+            if (taskType.type === 'sound') {
+                param = taskType.sounds[Math.floor(Math.random() * taskType.sounds.length)];
+                correctChars = taskType.getCorrect(param);
+            } else {
+                param = taskType.rows[Math.floor(Math.random() * taskType.rows.length)];
+                correctChars = taskType.getCorrect(param);
+            }
+
+            const distractors = allChars.filter(c => !correctChars.includes(c));
+            const selectedDistractors = shuffle(distractors).slice(0, Math.min(5, distractors.length));
+            const displayChars = shuffle([...correctChars, ...selectedDistractors]).slice(0, 8);
+
+            currentQuestion = {
+                type: 4,
+                task: taskType.getText(param),
+                correct: correctChars.map(c => c.char),
+                options: displayChars.map(c => c.char)
+            };
+            
+            renderQuestion4();
+        }
+        
+        function renderQuestion1() {
+            const content = document.getElementById('exercise-content');
+            content.innerHTML = `
+                <div class="question-display">${currentQuestion.question}</div>
+                <div class="options-grid" id="options-container">
+                    ${currentQuestion.options.map((opt, idx) => 
+                        `<button class="option-btn" onclick="handleAnswer('${opt}')" id="opt-${idx}">${opt}</button>`
+                    ).join('')}
+                </div>
+                <div id="result-area"></div>
+            `;
+        }
+        
+        function renderQuestion2() {
+            const content = document.getElementById('exercise-content');
+            content.innerHTML = `
+                <div class="question-display">${currentQuestion.question}</div>
+                <div class="options-grid" id="options-container">
+                    ${currentQuestion.options.map((opt, idx) => 
+                        `<button class="option-btn" onclick="handleAnswer('${opt}')" id="opt-${idx}">${opt}</button>`
+                    ).join('')}
+                </div>
+                <div id="result-area"></div>
+            `;
+        }
+        
+        function renderQuestion3() {
+            const content = document.getElementById('exercise-content');
+            content.innerHTML = `
+                <div style="text-align: center; color: #666; margin-bottom: 15px;">Как читается это слово?</div>
+                <div class="question-display">${currentQuestion.word.hiragana}</div>
+                <div class="word-meaning">(${currentQuestion.word.meaning})</div>
+                <input type="text" class="input-field" id="word-input" placeholder="Введи ромадзи..." onkeypress="if(event.key==='Enter') handleWordCheck()">
+                <button class="btn-primary" onclick="handleWordCheck()">Проверить</button>
+                <div id="result-area"></div>
+            `;
+        }
+        
+        function renderQuestion4() {
+            const content = document.getElementById('exercise-content');
+            content.innerHTML = `
+                <div class="task-text">${currentQuestion.task}</div>
+                <div class="symbols-grid" id="symbols-container">
+                    ${currentQuestion.options.map((symbol, idx) => 
+                        `<button class="symbol-btn" onclick="toggleSymbol('${symbol}', ${idx})" id="sym-${idx}">${symbol}</button>`
+                    ).join('')}
+                </div>
+                <button class="btn-primary" id="check-btn" onclick="checkSymbols()">Проверить</button>
+                <div id="result-area"></div>
+            `;
+        }
+        
+        function handleAnswer(answer) {
+            if (showResult) return;
+            showResult = true;
+            
+            const isCorrect = answer === currentQuestion.correct;
+            score.total++;
+            if (isCorrect) score.correct++;
+            updateScore();
+            
+            currentQuestion.options.forEach((opt, idx) => {
+                const btn = document.getElementById(`opt-${idx}`);
+                btn.disabled = true;
+                if (opt === currentQuestion.correct) {
+                    btn.classList.add('correct');
+                } else if (opt === answer) {
+                    btn.classList.add('incorrect');
+                } else {
+                    btn.classList.add('neutral');
+                }
+            });
+            
+            const resultArea = document.getElementById('result-area');
+            resultArea.innerHTML = `
+                <div class="result-message ${isCorrect ? 'result-correct' : 'result-incorrect'}">
+                    ${isCorrect ? 'Правильно! 🎉' : `Правильный ответ: ${currentQuestion.correct}`}
+                </div>
+                <button class="btn-primary" onclick="generateQuestion()">Следующий вопрос</button>
+            `;
+        }
+        
+        function handleWordCheck() {
+            if (showResult) return;
+            showResult = true;
+            
+            const input = document.getElementById('word-input');
+            const userAnswer = input.value.toLowerCase().trim();
+            const isCorrect = userAnswer === currentQuestion.word.romaji;
+            
+            score.total++;
+            if (isCorrect) score.correct++;
+            updateScore();
+            
+            input.disabled = true;
+            
+            const resultArea = document.getElementById('result-area');
+            resultArea.innerHTML = `
+                <div class="result-message ${isCorrect ? 'result-correct' : 'result-incorrect'}">
+                    ${isCorrect ? 'Правильно! 🎉' : `<div>Неправильно</div><div style="font-size: 20px; color: #666; margin-top: 10px;">Правильно: ${currentQuestion.word.romaji}</div>`}
+                </div>
+                <button class="btn-primary" onclick="generateQuestion()">Следующее слово</button>
+            `;
+            
+            const checkBtn = document.querySelector('.btn-primary:not([onclick="generateQuestion()"])');
+            if (checkBtn) checkBtn.style.display = 'none';
+        }
+        
+        function toggleSymbol(symbol, idx) {
+            if (showResult) return;
+            
+            const btn = document.getElementById(`sym-${idx}`);
+            if (selectedSymbols.includes(symbol)) {
+                selectedSymbols = selectedSymbols.filter(s => s !== symbol);
+                btn.classList.remove('selected');
+            } else {
+                selectedSymbols.push(symbol);
+                btn.classList.add('selected');
+            }
+        }
+        
+        function checkSymbols() {
+            if (showResult) return;
+            showResult = true;
+            
+            const correct = currentQuestion.correct;
+            const isCorrect = selectedSymbols.length === correct.length && 
+                              selectedSymbols.every(s => correct.includes(s));
+            
+            score.total++;
+            if (isCorrect) score.correct++;
+            updateScore();
+            
+            currentQuestion.options.forEach((symbol, idx) => {
+                const btn = document.getElementById(`sym-${idx}`);
+                btn.disabled = true;
+                btn.classList.remove('selected');
+                
+                const isCorrectSymbol = correct.includes(symbol);
+                const isSelected = selectedSymbols.includes(symbol);
+                
+                if (isSelected && isCorrectSymbol) {
+                    btn.classList.add('result-correct');
+                } else if (isSelected && !isCorrectSymbol) {
+                    btn.classList.add('result-incorrect');
+                } else if (!isSelected && isCorrectSymbol) {
+                    btn.classList.add('result-missed');
+                } else {
+                    btn.classList.add('result-neutral');
+                }
+            });
+            
+            const resultArea = document.getElementById('result-area');
+            resultArea.innerHTML = `
+                <div class="legend">
+                    <span class="legend-item" style="background: #4caf50;"></span>Правильно выбрано
+                    <span class="legend-item" style="background: #f44336;"></span>Неправильно выбрано
+                    <span class="legend-item" style="background: #ffc107;"></span>Пропущено
+                </div>
+                <div class="result-message ${isCorrect ? 'result-correct' : 'result-info'}">
+                    ${isCorrect ? 'Отлично! 🎉' : 'Есть ошибки - смотри подсветку выше'}
+                </div>
+                <button class="btn-primary" onclick="generateQuestion()">Следующее задание</button>
+            `;
+            
+            document.getElementById('check-btn').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
